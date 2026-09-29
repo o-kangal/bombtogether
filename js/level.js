@@ -7,7 +7,6 @@ export function startLevel(lvl) {
   state.gameState = "PLAYING";
   hideBanner();
 
-  // Configure grid dimensions according to active mode
   if (state.mode === "COOP") {
     state.cols = COOP_COLS;
     state.rows = COOP_ROWS;
@@ -23,18 +22,30 @@ export function startLevel(lvl) {
   state.floatingTexts = [];
   state.exitDoor = { r: -1, c: -1, unlocked: false };
 
-  // Setup Player 1 spawn (Top-left)
+  // Setup Player 1 spawn
   state.players.p1.x = 1.15;
   state.players.p1.y = 1.15;
   state.players.p1.facing = "DOWN";
-  state.players.p1.invincibleTimer = 60;
+  state.players.p1.respawnTimer = 0;
+  if (state.players.p1.lives <= 0) {
+    state.players.p1.alive = false;
+  } else {
+    state.players.p1.alive = true;
+    state.players.p1.invincibleTimer = 60;
+  }
 
-  // Setup Player 2 spawn (Bottom-right) if in Co-op mode
+  // Setup Player 2 spawn in Co-op mode
   if (state.mode === "COOP") {
     state.players.p2.x = state.cols - 2 + 0.15;
     state.players.p2.y = state.rows - 2 + 0.15;
     state.players.p2.facing = "UP";
-    state.players.p2.invincibleTimer = 60;
+    state.players.p2.respawnTimer = 0;
+    if (state.players.p2.lives <= 0) {
+      state.players.p2.alive = false;
+    } else {
+      state.players.p2.alive = true;
+      state.players.p2.invincibleTimer = 60;
+    }
   }
 
   state.grid = [];
@@ -47,14 +58,14 @@ export function startLevel(lvl) {
       const isP2Spawn = (state.mode === "COOP" && r >= state.rows - 3 && c >= state.cols - 3);
 
       if (r === 0 || r === state.rows - 1 || c === 0 || c === state.cols - 1) {
-        state.grid[r][c] = 1; // Outer border
+        state.grid[r][c] = 1;
       } else if (r % 2 === 0 && c % 2 === 0) {
-        state.grid[r][c] = 1; // Pillar
+        state.grid[r][c] = 1;
       } else if (isP1Spawn || isP2Spawn) {
-        state.grid[r][c] = 0; // Clear player spawn quadrants
+        state.grid[r][c] = 0;
       } else {
         if (Math.random() < 0.60) {
-          state.grid[r][c] = 2; // Destructible brick
+          state.grid[r][c] = 2;
           brickCandidates.push({ r, c });
         } else {
           state.grid[r][c] = 0;
@@ -65,14 +76,12 @@ export function startLevel(lvl) {
 
   shuffleArray(brickCandidates);
 
-  // Hide exit door behind a brick
   if (brickCandidates.length > 0) {
     const doorSpot = brickCandidates.pop();
     state.exitDoor.r = doorSpot.r;
     state.exitDoor.c = doorSpot.c;
   }
 
-  // Balanced power-up placement (~16% of total bricks)
   const powerupPool = ["BOMB", "FIRE", "SPEED"];
   if (state.mode === "COOP") powerupPool.push("LIFE");
 
@@ -90,7 +99,6 @@ export function startLevel(lvl) {
     });
   }
 
-  // Enemy spawn arrangement
   const enemyCount = state.mode === "COOP"
     ? Math.min(3 + state.currentLevel, 9)
     : Math.min(2 + state.currentLevel, 7);

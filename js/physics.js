@@ -2,6 +2,7 @@ import { TILE } from './config.js';
 import { state } from './state.js';
 import { AudioEngine } from './audio.js';
 import { sendNetworkData } from './network.js';
+import { updateHUD } from './ui.js';
 
 export function checkPlayerBombOverlap(player, bomb) {
   if (!player) return false;
@@ -35,7 +36,6 @@ export function canMoveTo(x, y, playerKey = null, playerSize = 26) {
     if (state.grid[pt.r][pt.c] !== 0) return false;
   }
 
-  // Evaluate bomb solidness per player entity
   for (const b of state.bombs) {
     const isPassable = (playerKey && b.passableFor) ? b.passableFor[playerKey] : false;
     if (!isPassable) {
@@ -54,18 +54,20 @@ export function canMoveTo(x, y, playerKey = null, playerSize = 26) {
 }
 
 export function checkRevive(activePlayer, deadPlayer, activeKey) {
-  if (!activePlayer.alive || deadPlayer.alive) return;
+  if (!activePlayer.alive || deadPlayer.alive || deadPlayer.lives > 0) return;
   if (activePlayer.lives <= 1) return;
 
   const dist = Math.hypot(activePlayer.x - deadPlayer.x, activePlayer.y - deadPlayer.y);
-  if (dist <= 0.85) {
+  if (dist <= 1.2) {
     activePlayer.lives--;
     deadPlayer.alive = true;
     deadPlayer.lives = 1;
-    deadPlayer.invincibleTimer = 120; // 2 seconds invulnerability
+    deadPlayer.respawnTimer = 0;
+    deadPlayer.invincibleTimer = 180; // 3 seconds invulnerability window
 
     AudioEngine.revive();
     addFloatingText("REVIVED!", deadPlayer.x * TILE + 20, deadPlayer.y * TILE, "#2ecc71");
+    updateHUD();
 
     if (state.mode === "COOP" && state.role === "HOST") {
       sendNetworkData({

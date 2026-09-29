@@ -13,7 +13,8 @@ function createPlayer(x, y, facing = "DOWN") {
     animFrame: 0,
     alive: true,
     lives: 3,
-    invincibleTimer: 0
+    invincibleTimer: 0,
+    respawnTimer: 0
   };
 }
 
@@ -40,10 +41,8 @@ export const state = {
   exitDoor: { r: -1, c: -1, unlocked: false },
   floatingTexts: [],
 
-  // Local key input tracking
   keys: {},
 
-  // Remote key input tracking received by Host
   remoteKeys: {
     ArrowUp: false,
     ArrowDown: false,
@@ -66,4 +65,5 @@ export function resetPlayerStats(player) {
   player.lives = 3;
   player.alive = true;
   player.invincibleTimer = 0;
+  player.respawnTimer = 0;
 }

@@ -11,6 +11,7 @@ import {
   getEnteredRoomCode,
   setEnteredRoomCode,
   showBanner,
+  hideBanner,
   setupBannerListener
 } from './ui.js';
 import { canMoveTo, checkPlayerBombOverlap, checkRevive, addFloatingText } from './physics.js';
@@ -231,19 +232,23 @@ setNetworkCallbacks({
 
     updateHUD();
 
-    if (state.gameState === "GAME_OVER") {
+    if (state.gameState === "PLAYING") {
+      hideBanner();
+    } else if (state.gameState === "GAME_OVER") {
       showBanner({
         title: "GAME OVER",
         titleColor: "#e74c3c",
         sub: `Both players fell. Stage: ${state.currentLevel}`,
-        btnText: "WAITING FOR HOST"
+        isWaiting: true,
+        statusText: "WAITING FOR HOST TO RESTART..."
       });
     } else if (state.gameState === "LEVEL_CLEARED") {
       showBanner({
         title: `STAGE ${state.currentLevel} CLEARED!`,
         titleColor: "#f1c40f",
         sub: "Preparing next sector...",
-        btnText: "WAITING FOR HOST"
+        isWaiting: true,
+        statusText: "WAITING FOR HOST..."
       });
     }
   },
@@ -270,6 +275,7 @@ function playerKilled(playerKey) {
   if (!p || !p.alive || p.invincibleTimer > 0) return;
 
   p.alive = false;
+  p.lives--;
   AudioEngine.death();
   updateHUD();
 
@@ -277,16 +283,44 @@ function playerKilled(playerKey) {
     sendNetworkData({ type: "EVENT", payload: { name: "DEATH", playerKey } });
   }
 
-  const p1Dead = !state.players.p1.alive;
-  const p2Dead = state.mode === "COOP" ? !state.players.p2.alive : true;
+  if (state.mode === "SINGLE") {
+    if (p.lives > 0) {
+      setTimeout(() => {
+        startLevel(state.currentLevel);
+      }, 1200);
+    } else {
+      state.gameState = "GAME_OVER";
+      showBanner({
+        title: "GAME OVER",
+        titleColor: "#e74c3c",
+        sub: `Final Score: ${state.score} - Reached Stage ${state.currentLevel}`,
+        btnText: "PLAY AGAIN",
+        isWaiting: false
+      });
+    }
+    return;
+  }
 
-  if (p1Dead && p2Dead) {
+  // Co-op mode death handling
+  if (p.lives > 0) {
+    p.respawnTimer = 90;
+    addFloatingText("-1 LIFE", p.x * TILE + 20, p.y * TILE, "#e74c3c");
+  } else {
+    p.respawnTimer = 0;
+    addFloatingText("OUT OF LIVES!", p.x * TILE + 20, p.y * TILE, "#e74c3c");
+  }
+
+  const p1CanRespawn = state.players.p1.alive || state.players.p1.lives > 0;
+  const p2CanRespawn = state.players.p2.alive || state.players.p2.lives > 0;
+
+  if (!p1CanRespawn && !p2CanRespawn) {
     state.gameState = "GAME_OVER";
     showBanner({
       title: "GAME OVER",
       titleColor: "#e74c3c",
       sub: `Final Score: ${state.score} - Reached Stage ${state.currentLevel}`,
-      btnText: "PLAY AGAIN"
+      btnText: "PLAY AGAIN",
+      isWaiting: false
     });
   }
 }
@@ -305,7 +339,8 @@ function levelCompleted() {
     title: `STAGE ${state.currentLevel} CLEARED!`,
     titleColor: "#f1c40f",
     sub: "All upgrades carried over!",
-    btnText: `PROCEED TO STAGE ${state.currentLevel + 1}`
+    btnText: `PROCEED TO STAGE ${state.currentLevel + 1}`,
+    isWaiting: false
   });
 }
 
@@ -367,6 +402,31 @@ function updateHost() {
       checkRevive(state.players.p2, state.players.p1, "p2");
       state.remoteKeys.KeyE = false;
     }
+
+    // Process self-respawn timers for fallen players
+    ["p1", "p2"].forEach(key => {
+      const p = state.players[key];
+      if (!p.alive && p.lives > 0 && p.respawnTimer > 0) {
+        p.respawnTimer--;
+        if (p.respawnTimer <= 0) {
+          p.alive = true;
+          p.invincibleTimer = 180;
+          if (key === "p1") {
+            p.x = 1.15;
+            p.y = 1.15;
+            p.facing = "DOWN";
+          } else {
+            p.x = state.cols - 2 + 0.15;
+            p.y = state.rows - 2 + 0.15;
+            p.facing = "UP";
+          }
+          AudioEngine.powerup();
+          addFloatingText("RESPAWN!", p.x * TILE + 20, p.y * TILE, "#2ecc71");
+          updateHUD();
+          sendNetworkData({ type: "EVENT", payload: { name: "POWERUP" } });
+        }
+      }
+    });
   }
 
   state.bombs.forEach(b => {

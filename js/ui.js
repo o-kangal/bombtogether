@@ -30,13 +30,14 @@ const bannerOverlay = document.getElementById("bannerOverlay");
 const bannerTitle = document.getElementById("bannerTitle");
 const bannerSub = document.getElementById("bannerSub");
 const bannerBtn = document.getElementById("bannerBtn");
+const bannerStatus = document.getElementById("bannerStatus");
 
 export function updateHUD() {
   hudLevel.innerText = state.currentLevel;
   hudScore.innerText = state.score;
 
   // Player 1 HUD
-  p1Lives.innerText = "❤️".repeat(Math.max(0, state.players.p1.lives));
+  p1Lives.innerText = state.players.p1.lives > 0 ? "❤️".repeat(state.players.p1.lives) : "💀";
   p1Bombs.innerText = state.players.p1.maxBombs;
   p1Fire.innerText = state.players.p1.bombRange;
   p1Speed.innerText = state.players.p1.speedLevel;
@@ -46,7 +47,7 @@ export function updateHUD() {
     hudP2.style.display = "flex";
     reviveHelp.style.display = "inline";
     topHud.style.maxWidth = "680px";
-    p2Lives.innerText = "❤️".repeat(Math.max(0, state.players.p2.lives));
+    p2Lives.innerText = state.players.p2.lives > 0 ? "❤️".repeat(state.players.p2.lives) : "💀";
     p2Bombs.innerText = state.players.p2.maxBombs;
     p2Fire.innerText = state.players.p2.bombRange;
     p2Speed.innerText = state.players.p2.speedLevel;
@@ -90,11 +91,21 @@ export function setEnteredRoomCode(code) {
   inputRoomCode.value = code;
 }
 
-export function showBanner({ title, titleColor = "#f1c40f", sub, btnText }) {
+export function showBanner({ title, titleColor = "#f1c40f", sub, btnText, isWaiting = false, statusText = "" }) {
   bannerTitle.innerText = title;
   bannerTitle.style.color = titleColor;
   bannerSub.innerText = sub;
-  bannerBtn.innerText = btnText;
+
+  if (isWaiting) {
+    bannerBtn.style.display = "none";
+    bannerStatus.style.display = "inline-block";
+    bannerStatus.innerText = statusText || "WAITING FOR HOST...";
+  } else {
+    bannerBtn.style.display = "inline-block";
+    bannerBtn.innerText = btnText;
+    bannerStatus.style.display = "none";
+  }
+
   bannerOverlay.style.display = "flex";
 }
 
