@@ -1,4 +1,4 @@
-import { ROWS, COLS } from './config.js';
+import { SINGLE_COLS, SINGLE_ROWS, COOP_COLS, COOP_ROWS } from './config.js';
 import { state } from './state.js';
 import { updateHUD, hideBanner } from './ui.js';
 
@@ -7,6 +7,15 @@ export function startLevel(lvl) {
   state.gameState = "PLAYING";
   hideBanner();
 
+  // Configure grid dimensions according to active mode
+  if (state.mode === "COOP") {
+    state.cols = COOP_COLS;
+    state.rows = COOP_ROWS;
+  } else {
+    state.cols = SINGLE_COLS;
+    state.rows = SINGLE_ROWS;
+  }
+
   state.bombs = [];
   state.explosions = [];
   state.items = [];
@@ -14,27 +23,38 @@ export function startLevel(lvl) {
   state.floatingTexts = [];
   state.exitDoor = { r: -1, c: -1, unlocked: false };
 
-  state.player.x = 1.15;
-  state.player.y = 1.15;
-  state.player.alive = true;
-  state.player.facing = "DOWN";
+  // Setup Player 1 spawn (Top-left)
+  state.players.p1.x = 1.15;
+  state.players.p1.y = 1.15;
+  state.players.p1.facing = "DOWN";
+  state.players.p1.invincibleTimer = 60;
 
-  // Grid initialization (1: Hard Wall, 2: Destructible Brick, 0: Empty)
+  // Setup Player 2 spawn (Bottom-right) if in Co-op mode
+  if (state.mode === "COOP") {
+    state.players.p2.x = state.cols - 2 + 0.15;
+    state.players.p2.y = state.rows - 2 + 0.15;
+    state.players.p2.facing = "UP";
+    state.players.p2.invincibleTimer = 60;
+  }
+
   state.grid = [];
   const brickCandidates = [];
 
-  for (let r = 0; r < ROWS; r++) {
+  for (let r = 0; r < state.rows; r++) {
     state.grid[r] = [];
-    for (let c = 0; c < COLS; c++) {
-      if (r === 0 || r === ROWS - 1 || c === 0 || c === COLS - 1) {
-        state.grid[r][c] = 1;
+    for (let c = 0; c < state.cols; c++) {
+      const isP1Spawn = (r <= 2 && c <= 2);
+      const isP2Spawn = (state.mode === "COOP" && r >= state.rows - 3 && c >= state.cols - 3);
+
+      if (r === 0 || r === state.rows - 1 || c === 0 || c === state.cols - 1) {
+        state.grid[r][c] = 1; // Outer border
       } else if (r % 2 === 0 && c % 2 === 0) {
-        state.grid[r][c] = 1;
-      } else if (r <= 2 && c <= 2) {
-        state.grid[r][c] = 0; // Safe player spawn zone
+        state.grid[r][c] = 1; // Pillar
+      } else if (isP1Spawn || isP2Spawn) {
+        state.grid[r][c] = 0; // Clear player spawn quadrants
       } else {
-        if (Math.random() < 0.62) {
-          state.grid[r][c] = 2;
+        if (Math.random() < 0.60) {
+          state.grid[r][c] = 2; // Destructible brick
           brickCandidates.push({ r, c });
         } else {
           state.grid[r][c] = 0;
@@ -52,13 +72,15 @@ export function startLevel(lvl) {
     state.exitDoor.c = doorSpot.c;
   }
 
-  // Distribute power-ups under bricks
-  const itemTypes = ["BOMB", "FIRE", "SPEED"];
-  const itemCount = Math.min(3 + state.currentLevel, 6);
+  // Balanced power-up placement (~16% of total bricks)
+  const powerupPool = ["BOMB", "FIRE", "SPEED"];
+  if (state.mode === "COOP") powerupPool.push("LIFE");
 
-  for (let i = 0; i < itemCount && brickCandidates.length > 0; i++) {
+  const totalItemsCount = Math.max(3, Math.floor(brickCandidates.length * 0.16));
+
+  for (let i = 0; i < totalItemsCount && brickCandidates.length > 0; i++) {
     const spot = brickCandidates.pop();
-    const type = itemTypes[i % itemTypes.length];
+    const type = powerupPool[i % powerupPool.length];
     state.items.push({
       r: spot.r,
       c: spot.c,
@@ -68,19 +90,22 @@ export function startLevel(lvl) {
     });
   }
 
-  // Spawn enemy entities
-  const enemyCount = Math.min(2 + state.currentLevel, 7);
-  const enemySpawnSpots = [
-    { r: ROWS - 2, c: COLS - 2 },
-    { r: 1, c: COLS - 2 },
-    { r: ROWS - 2, c: 1 },
-    { r: 5, c: 9 },
-    { r: 7, c: 5 },
-    { r: 3, c: 9 }
+  // Enemy spawn arrangement
+  const enemyCount = state.mode === "COOP"
+    ? Math.min(3 + state.currentLevel, 9)
+    : Math.min(2 + state.currentLevel, 7);
+
+  const spawnSpots = [
+    { r: 1, c: state.cols - 2 },
+    { r: state.rows - 2, c: 1 },
+    { r: 5, c: 7 },
+    { r: 7, c: 9 },
+    { r: 3, c: 11 },
+    { r: 9, c: 5 }
   ];
 
   for (let i = 0; i < enemyCount; i++) {
-    const spot = enemySpawnSpots[i % enemySpawnSpots.length];
+    const spot = spawnSpots[i % spawnSpots.length];
     state.grid[spot.r][spot.c] = 0;
     state.grid[Math.max(1, spot.r - 1)][spot.c] = 0;
     state.grid[spot.r][Math.max(1, spot.c - 1)] = 0;

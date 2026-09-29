@@ -1,20 +1,35 @@
-export const state = {
-  currentLevel: 1,
-  score: 0,
-  lives: 3,
-  gameState: "PLAYING", // PLAYING, LEVEL_CLEARED, GAME_OVER
+import { SINGLE_COLS, SINGLE_ROWS } from './config.js';
 
-  player: {
-    x: 1.15,
-    y: 1.15,
+function createPlayer(x, y, facing = "DOWN") {
+  return {
+    x,
+    y,
     size: 26,
     speedLevel: 1,
     speed: 2.5,
     maxBombs: 1,
     bombRange: 1,
-    facing: "DOWN",
+    facing,
     animFrame: 0,
-    alive: true
+    alive: true,
+    lives: 3,
+    invincibleTimer: 0
+  };
+}
+
+export const state = {
+  mode: "SINGLE", // "SINGLE" | "COOP"
+  role: "HOST",   // "HOST" | "CLIENT"
+  currentLevel: 1,
+  score: 0,
+  gameState: "LOBBY", // "LOBBY" | "PLAYING" | "LEVEL_CLEARED" | "GAME_OVER"
+
+  cols: SINGLE_COLS,
+  rows: SINGLE_ROWS,
+
+  players: {
+    p1: createPlayer(1.15, 1.15, "DOWN"),
+    p2: createPlayer(1.15, 1.15, "UP")
   },
 
   grid: [],
@@ -24,12 +39,31 @@ export const state = {
   enemies: [],
   exitDoor: { r: -1, c: -1, unlocked: false },
   floatingTexts: [],
-  keys: {}
+
+  // Local key input tracking
+  keys: {},
+
+  // Remote key input tracking received by Host
+  remoteKeys: {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+    KeyW: false,
+    KeyS: false,
+    KeyA: false,
+    KeyD: false,
+    Space: false,
+    KeyE: false
+  }
 };
 
-export function resetPlayerStats() {
-  state.player.maxBombs = 1;
-  state.player.bombRange = 1;
-  state.player.speed = 2.5;
-  state.player.speedLevel = 1;
+export function resetPlayerStats(player) {
+  player.maxBombs = 1;
+  player.bombRange = 1;
+  player.speed = 2.5;
+  player.speedLevel = 1;
+  player.lives = 3;
+  player.alive = true;
+  player.invincibleTimer = 0;
 }

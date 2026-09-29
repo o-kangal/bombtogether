@@ -6,6 +6,9 @@ export const AudioEngine = {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       this.ctx = new AudioContext();
     }
+    if (this.ctx && this.ctx.state === "suspended") {
+      this.ctx.resume();
+    }
   },
 
   playTone(freq, type, duration, startVol = 0.2) {
@@ -42,9 +45,16 @@ export const AudioEngine = {
     });
   },
 
+  revive() {
+    if (!this.ctx) return;
+    [329.63, 440.00, 554.37, 659.25, 880.00].forEach((f, i) => {
+      setTimeout(() => this.playTone(f, "triangle", 0.12, 0.25), i * 65);
+    });
+  },
+
   explosion() {
     if (!this.ctx) return;
-    const bufferSize = this.ctx.sampleRate * 0.3;
+    const bufferSize = Math.floor(this.ctx.sampleRate * 0.3);
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {

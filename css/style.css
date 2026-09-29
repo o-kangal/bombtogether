@@ -28,32 +28,55 @@ body {
   align-items: center;
 }
 
+/* Top HUD */
 .top-hud {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 520px;
+  width: 100%;
+  max-width: 520px;
   background: #111;
   border: 3px solid #f39c12;
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   margin-bottom: 12px;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 13px;
   color: #f1c40f;
   letter-spacing: 1px;
+  gap: 10px;
+  transition: max-width 0.2s ease;
 }
 
-.hud-item {
+.hud-player-block {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+}
+
+.hud-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.p1-badge {
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.p2-badge {
+  background: #34495e;
+  color: #f1c40f;
+  border: 1px solid #f39c12;
 }
 
 .hud-val {
   color: #fff;
 }
 
+/* Canvas Area */
 .canvas-wrapper {
   position: relative;
   border: 4px solid #34495e;
@@ -67,18 +90,169 @@ canvas {
   background: #27ae60;
 }
 
-.banner-overlay {
+/* Overlays */
+.screen-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  display: none;
+  background: rgba(10, 13, 16, 0.92);
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  z-index: 10;
+}
+
+.arcade-title {
+  font-size: 38px;
+  font-weight: 900;
+  color: #f1c40f;
+  text-shadow: 4px 4px #c0392b;
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+}
+
+.lobby-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.lobby-sub {
+  font-size: 14px;
+  color: #bdc3c7;
+  letter-spacing: 1px;
+}
+
+/* Code box and action buttons container */
+.code-box-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.room-code-tag {
+  background: #111;
+  border: 3px dashed #f39c12;
+  color: #2ecc71;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.input-code {
+  background: #111;
+  border: 3px solid #f39c12;
+  color: #f1c40f;
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 6px;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 6px;
+  width: 200px;
+  outline: none;
+}
+
+.input-code:focus {
+  border-color: #2ecc71;
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+}
+
+.error-msg {
+  color: #e74c3c;
+  font-size: 13px;
+  min-height: 18px;
+  font-weight: bold;
+}
+
+.lobby-status {
+  font-size: 13px;
+  color: #f39c12;
+  margin-bottom: 8px;
+}
+
+.blink-anim {
+  animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Buttons */
+.btn {
+  background: #e74c3c;
+  color: white;
+  border: 3px solid #c0392b;
+  padding: 10px 24px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px #7f1d1d;
+  transition: transform 0.1s, background-color 0.2s;
+  letter-spacing: 1px;
+}
+
+.btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px #7f1d1d;
+}
+
+.btn-menu {
+  width: 240px;
+  background: #d35400;
+  border-color: #a04000;
+  box-shadow: 0 4px #6e2c00;
+}
+
+.btn-secondary {
+  background: #7f8c8d;
+  border-color: #566573;
+  box-shadow: 0 4px #2c3e50;
+  font-size: 13px;
+  padding: 6px 18px;
+}
+
+.btn-action {
+  background: #2980b9;
+  border-color: #1f618d;
+  box-shadow: 0 4px #154360;
+  font-size: 13px;
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+
+.btn-action:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px #154360;
+}
+
+.btn-action.btn-copied {
+  background: #27ae60;
+  border-color: #1e8449;
+  box-shadow: 0 4px #145a32;
 }
 
 .banner-title {
@@ -90,28 +264,9 @@ canvas {
 }
 
 .banner-sub {
-  font-size: 16px;
+  font-size: 15px;
   color: #ecf0f1;
   margin-bottom: 20px;
-}
-
-.btn {
-  background: #e74c3c;
-  color: white;
-  border: 3px solid #c0392b;
-  padding: 10px 24px;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 4px #7f1d1d;
-  transition: transform 0.1s;
-}
-
-.btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px #7f1d1d;
 }
 
 .bottom-info {

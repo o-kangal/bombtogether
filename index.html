@@ -4,33 +4,101 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Bomberman JS</title>
+  <title>BombTogether</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 
 <body>
 
+  <!-- Main Arcade Container -->
   <div class="arcade-cabinet">
-    <div class="top-hud">
-      <div class="hud-item">STAGE: <span class="hud-val" id="hudLevel">1</span></div>
-      <div class="hud-item">LIVES: <span class="hud-val" id="hudLives">❤️❤️❤️</span></div>
-      <div class="hud-item">💣 <span class="hud-val" id="hudBombs">1</span></div>
-      <div class="hud-item">🔥 <span class="hud-val" id="hudFire">1</span></div>
-      <div class="hud-item">👟 <span class="hud-val" id="hudSpeed">1</span></div>
-      <div class="hud-item">SCORE: <span class="hud-val" id="hudScore">0</span></div>
+
+    <!-- Top HUD -->
+    <div id="topHud" class="top-hud">
+      <div class="hud-center-stage">STAGE: <span id="hudLevel" class="hud-val">1</span></div>
+
+      <!-- Player 1 HUD -->
+      <div id="hudP1" class="hud-player-block">
+        <span class="hud-badge p1-badge">P1</span>
+        <span id="p1Lives" class="hud-val">❤️❤️❤️</span>
+        <span>💣 <span id="p1Bombs" class="hud-val">1</span></span>
+        <span>🔥 <span id="p1Fire" class="hud-val">1</span></span>
+        <span>👟 <span id="p1Speed" class="hud-val">1</span></span>
+      </div>
+
+      <!-- Player 2 HUD (Co-op only) -->
+      <div id="hudP2" class="hud-player-block" style="display: none;">
+        <span class="hud-badge p2-badge">P2</span>
+        <span id="p2Lives" class="hud-val">❤️❤️❤️</span>
+        <span>💣 <span id="p2Bombs" class="hud-val">1</span></span>
+        <span>🔥 <span id="p2Fire" class="hud-val">1</span></span>
+        <span>👟 <span id="p2Speed" class="hud-val">1</span></span>
+      </div>
+
+      <div class="hud-score-block">SCORE: <span id="hudScore" class="hud-val">0</span></div>
     </div>
 
-    <div class="canvas-wrapper">
+    <!-- Canvas Wrapper with Overlays -->
+    <div id="canvasWrapper" class="canvas-wrapper">
       <canvas id="gameCanvas" width="520" height="440"></canvas>
-      <div id="bannerOverlay" class="banner-overlay">
+
+      <!-- Lobby Menu Overlay -->
+      <div id="lobbyOverlay" class="screen-overlay">
+        <div class="arcade-title">BOMB TOGETHER</div>
+
+        <!-- Mode Select View -->
+        <div id="viewModeSelect" class="lobby-view">
+          <button id="btnSelectSingle" class="btn btn-menu">SINGLE PLAYER</button>
+          <button id="btnSelectCoop" class="btn btn-menu">CO-OP MULTIPLAYER</button>
+        </div>
+
+        <!-- Co-op Choice View -->
+        <div id="viewCoopChoice" class="lobby-view" style="display: none;">
+          <button id="btnCreateGame" class="btn btn-menu">CREATE GAME</button>
+          <button id="btnJoinGame" class="btn btn-menu">JOIN GAME</button>
+          <button id="btnBackToMode" class="btn btn-secondary">BACK</button>
+        </div>
+
+        <!-- Host Waiting View -->
+        <div id="viewHostWait" class="lobby-view" style="display: none;">
+          <div class="lobby-sub">SHARE THIS ROOM CODE:</div>
+          <div class="code-box-row">
+            <div id="displayRoomCode" class="room-code-tag">------</div>
+            <button id="btnCopyCode" class="btn btn-action" type="button">📋 COPY</button>
+          </div>
+          <div class="lobby-status blink-anim">WAITING FOR PLAYER 2...</div>
+          <button id="btnCancelHost" class="btn btn-secondary">CANCEL</button>
+        </div>
+
+        <!-- Join Input View -->
+        <div id="viewJoinInput" class="lobby-view" style="display: none;">
+          <div class="lobby-sub">ENTER 6-DIGIT ROOM CODE:</div>
+          <div class="code-box-row">
+            <input type="text" id="inputRoomCode" class="input-code" maxlength="6" placeholder="ROOM CODE"
+              autocomplete="off" spellcheck="false">
+            <button id="btnPasteCode" class="btn btn-action" type="button">📋 PASTE</button>
+          </div>
+          <div id="joinErrorMsg" class="error-msg"></div>
+          <button id="btnSubmitJoin" class="btn btn-menu">CONNECT</button>
+          <button id="btnCancelJoin" class="btn btn-secondary">BACK</button>
+        </div>
+      </div>
+
+      <!-- Banner Overlay (Stage Clear / Game Over) -->
+      <div id="bannerOverlay" class="screen-overlay" style="display: none;">
         <div id="bannerTitle" class="banner-title">STAGE CLEARED!</div>
         <div id="bannerSub" class="banner-sub">Proceeding to next stage...</div>
         <button id="bannerBtn" class="btn">CONTINUE</button>
       </div>
     </div>
 
-    <div class="bottom-info">
-      <strong>ARROW KEYS / WASD</strong>: Move &nbsp;|&nbsp; <strong>SPACE</strong>: Place Bomb
+    <!-- Bottom Controls Guide -->
+    <div id="bottomInfo" class="bottom-info">
+      <strong>ARROW KEYS / WASD</strong>: Move &nbsp;|&nbsp;
+      <strong>SPACE</strong>: Place Bomb &nbsp;|&nbsp;
+      <strong id="reviveHelp" style="display: none;">E: Revive Partner &nbsp;|&nbsp;</strong>
+      <strong>P</strong>: Pause
     </div>
   </div>
 
