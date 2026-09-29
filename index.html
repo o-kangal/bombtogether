@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Bomberman JS</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div class="arcade-cabinet">
+    <div class="top-hud">
+      <div class="hud-item">STAGE: <span class="hud-val" id="hudLevel">1</span></div>
+      <div class="hud-item">LIVES: <span class="hud-val" id="hudLives">❤️❤️❤️</span></div>
+      <div class="hud-item">💣 <span class="hud-val" id="hudBombs">1</span></div>
+      <div class="hud-item">🔥 <span class="hud-val" id="hudFire">1</span></div>
+      <div class="hud-item">👟 <span class="hud-val" id="hudSpeed">1</span></div>
+      <div class="hud-item">SCORE: <span class="hud-val" id="hudScore">0</span></div>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="520" height="440"></canvas>
+      <div id="bannerOverlay" class="banner-overlay">
+        <div id="bannerTitle" class="banner-title">STAGE CLEARED!</div>
+        <div id="bannerSub" class="banner-sub">Proceeding to next stage...</div>
+        <button id="bannerBtn" class="btn">CONTINUE</button>
+      </div>
+    </div>
+
+    <div class="bottom-info">
+      <strong>ARROW KEYS / WASD</strong>: Move &nbsp;|&nbsp; <strong>SPACE</strong>: Place Bomb
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
