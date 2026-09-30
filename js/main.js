@@ -129,6 +129,14 @@ document.getElementById("btnSelectCoop").addEventListener("click", () => {
   showLobbyView("COOP_CHOICE");
 });
 
+document.getElementById("btnInstructions").addEventListener("click", () => {
+  showLobbyView("INSTRUCTIONS");
+});
+
+document.getElementById("btnBackFromInstructions").addEventListener("click", () => {
+  showLobbyView("MODE_SELECT");
+});
+
 document.getElementById("btnBackToMode").addEventListener("click", () => {
   showLobbyView("MODE_SELECT");
 });
@@ -301,7 +309,6 @@ function playerKilled(playerKey) {
     return;
   }
 
-  // Co-op mode death handling
   if (p.lives > 0) {
     p.respawnTimer = 90;
     addFloatingText("-1 LIFE", p.x * TILE + 20, p.y * TILE, "#e74c3c");

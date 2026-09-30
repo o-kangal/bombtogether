@@ -51,6 +51,36 @@
         <div id="viewModeSelect" class="lobby-view">
           <button id="btnSelectSingle" class="btn btn-menu">SINGLE PLAYER</button>
           <button id="btnSelectCoop" class="btn btn-menu">CO-OP MULTIPLAYER</button>
+          <button id="btnInstructions" class="btn btn-secondary">HOW TO PLAY</button>
+        </div>
+
+        <!-- Instructions View -->
+        <div id="viewInstructions" class="lobby-view" style="display: none;">
+          <div class="instructions-card">
+            <div class="instructions-section">
+              <div class="instructions-title">CONTROLS</div>
+              <p><strong>WASD / ARROW KEYS</strong>: Movement</p>
+              <p><strong>SPACEBAR</strong>: Drop Bomb</p>
+              <p><strong>E KEY</strong>: Revive Fallen Partner (Co-op)</p>
+            </div>
+
+            <div class="instructions-section">
+              <div class="instructions-title">ITEMS & POWER-UPS</div>
+              <p>💣 <strong>BOMB</strong>: +1 Simultaneous Bomb</p>
+              <p>🔥 <strong>FIRE</strong>: +1 Explosion Radius</p>
+              <p>👟 <strong>SPEED</strong>: Faster Movement</p>
+              <p>❤️ <strong>HEART</strong>: +1 Extra Life (Co-op only)</p>
+            </div>
+
+            <div class="instructions-section">
+              <div class="instructions-title">RULES & CO-OP REVIVE</div>
+              <p>• Destroy bricks, eliminate all monsters, and find the portal.</p>
+              <p>• If you die with lives remaining, you auto-respawn in 1.5s.</p>
+              <p>• If out of lives (💀), your teammate can spend 1 life with <strong>E</strong> near your grave to bring
+                you back.</p>
+            </div>
+          </div>
+          <button id="btnBackFromInstructions" class="btn btn-secondary">BACK</button>
         </div>
 
         <!-- Co-op Choice View -->

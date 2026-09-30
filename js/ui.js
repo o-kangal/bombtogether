@@ -18,6 +18,7 @@ const p2Speed = document.getElementById("p2Speed");
 
 const lobbyOverlay = document.getElementById("lobbyOverlay");
 const viewModeSelect = document.getElementById("viewModeSelect");
+const viewInstructions = document.getElementById("viewInstructions");
 const viewCoopChoice = document.getElementById("viewCoopChoice");
 const viewHostWait = document.getElementById("viewHostWait");
 const viewJoinInput = document.getElementById("viewJoinInput");
@@ -61,6 +62,7 @@ export function updateHUD() {
 export function showLobbyView(viewName) {
   lobbyOverlay.style.display = "flex";
   viewModeSelect.style.display = viewName === "MODE_SELECT" ? "flex" : "none";
+  viewInstructions.style.display = viewName === "INSTRUCTIONS" ? "flex" : "none";
   viewCoopChoice.style.display = viewName === "COOP_CHOICE" ? "flex" : "none";
   viewHostWait.style.display = viewName === "HOST_WAIT" ? "flex" : "none";
   viewJoinInput.style.display = viewName === "JOIN_INPUT" ? "flex" : "none";
