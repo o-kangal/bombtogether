@@ -35,20 +35,31 @@ bombtogether/
 ├── index.html          # Semantic HTML shell, viewport, HUD & modal overlays
 ├── LICENSE             # MIT License
 ├── README.md           # Engineering documentation
+├── AGENTS.md           # Root entrypoint & router for AI agent contributors
+├── docs/
+│   └── agent/          # Internal architecture specifications & invariants
+│       ├── 00_INVARIANTS.md   # Zero-build, vanilla constraints & core rules
+│       ├── 01_NETWORKING.md   # WebRTC host-authoritative packet schemas
+│       ├── 02_PHYSICS.md      # AABB collision & corner-sliding heuristics
+│       ├── 03_GAMEPLAY.md     # Health, revive, portal & lifecycle rules
+│       ├── 04_AUDIO.md        # Synthesized Web Audio API specifications
+│       ├── 05_CODE_STYLE.md   # Module boundaries & architectural conventions
+│       ├── 06_TESTING.md      # Local multi-client verification protocol
+│       └── TASKS.md           # Engineering task backlog & bugfix specs
 ├── css/
-│   └── style.css       # Retro arcade cabinet styling, CRT scanline aesthetic & responsiveness
+│   └── style.css       # Retro arcade cabinet styling, CRT aesthetic & responsiveness
 └── js/
-    ├── config.js       # Game constants, dynamic grid dimensions & room code alphabet
-    ├── audio.js        # Web Audio API procedural sound synthesizer (Oscillator & BiquadFilters)
-    ├── state.js        # Centralized mutable game state and player data models
-    ├── network.js      # WebRTC DataChannel abstractions, PeerJS lifecycle & payload routing
-    ├── ui.js           # HUD manipulation, clipboard actions & overlay state machine
-    ├── physics.js      # AABB collision checks, corner-sliding heuristics & interaction triggers
-    ├── bomb.js         # Bomb placement, directional raycast ray-splitting & chain reactions
-    ├── level.js        # Procedural maze generator, power-up balancing & entity spawner
-    ├── renderer.js     # 60 FPS HTML5 Canvas retro rendering pipeline & sprite animator
-    └── main.js         # Master game loop, input capture, state updater & network broker
-``` 
+├── config.js       # Game constants, dynamic grid dimensions & room code alphabet
+├── audio.js        # Web Audio API procedural sound synthesizer (Oscillator & BiquadFilters)
+├── state.js        # Centralized mutable game state and player data models
+├── network.js      # WebRTC DataChannel abstractions, PeerJS lifecycle & payload routing
+├── ui.js           # HUD manipulation, clipboard actions & overlay state machine
+├── physics.js      # AABB collision checks, corner-sliding heuristics & interaction triggers
+├── bomb.js         # Bomb placement, directional raycast ray-splitting & chain reactions
+├── level.js        # Procedural maze generator, power-up balancing & entity spawner
+├── renderer.js     # 60 FPS HTML5 Canvas retro rendering pipeline & sprite animator
+└── main.js         # Master game loop, input capture, state updater & network broker
+```
 
 ### 2. Network Synchronization Model (Authoritative Host)
 
