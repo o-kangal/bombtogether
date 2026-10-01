@@ -13,6 +13,8 @@
 Play instantly in your browser (no downloads, no accounts, no installations required):  
 👉 **[https://bombtogether.com](https://bombtogether.com)**
 
+👉 **[https://o-kangal.github.io/bombtogether/](https://o-kangal.github.io/bombtogether/)**  (Alternative)
+
 ---
 
 ## 🌟 Highlights
